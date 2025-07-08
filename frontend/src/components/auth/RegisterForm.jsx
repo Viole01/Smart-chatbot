@@ -10,6 +10,8 @@ import AuthForm from './AuthForm';
 const RegisterForm = ({ onToggleMode }) => {
   const { login } = useAuth();
   const [userType, setUserType] = useState('patient');
+  
+  // For REGISTRATION, we include all possible fields
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -19,11 +21,12 @@ const RegisterForm = ({ onToggleMode }) => {
     specialization: '',
     licenseNumber: ''
   });
+  
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    const validationErrors = validateForm(formData, userType, false);
+    const validationErrors = validateForm(formData, userType, false); // false = isRegistration
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
@@ -33,8 +36,10 @@ const RegisterForm = ({ onToggleMode }) => {
           email: formData.email,
           password: formData.password,
           full_name: formData.fullName,
-          phone: formData.phone,
           user_type: userType,
+          // Only include phone for doctor and patient
+          ...(userType === 'doctor' || userType === 'patient' ? { phone: formData.phone } : {}),
+          // Only include doctor-specific fields for doctors
           ...(userType === 'doctor' && {
             specialization: formData.specialization,
             license_number: formData.licenseNumber

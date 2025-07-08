@@ -10,16 +10,19 @@ import AuthForm from './AuthForm';
 const LoginForm = ({ onToggleMode }) => {
   const { login } = useAuth();
   const [userType, setUserType] = useState('patient');
+  
+  // For LOGIN, we only need email and password - NO phone
   const [formData, setFormData] = useState({
     email: '',
-    phone: '',
     password: ''
+    // Note: Removed phone, fullName, etc. - not needed for login
   });
+  
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    const validationErrors = validateForm(formData, userType, true);
+    const validationErrors = validateForm(formData, userType, true); // true = isLogin
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {

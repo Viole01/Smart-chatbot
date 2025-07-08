@@ -21,15 +21,16 @@ export const validateRequired = (value) => {
 export const validateForm = (formData, userType, isLogin) => {
   const errors = {};
 
-  // Email validation
+  // Email validation (required for ALL users)
   if (!formData.email) {
     errors.email = 'Email is required';
   } else if (!validateEmail(formData.email)) {
     errors.email = 'Please enter a valid email address';
   }
 
-  // Phone validation (required for doctor and patient)
-  if (!isLogin || (userType === 'doctor' || userType === 'patient')) {
+  // Phone validation - ONLY required during REGISTRATION for doctors and patients
+  // For LOGIN, no phone validation at all
+  if (!isLogin && (userType === 'doctor' || userType === 'patient')) {
     if (!formData.phone) {
       errors.phone = 'Phone number is required';
     } else if (!validatePhone(formData.phone)) {
@@ -37,14 +38,14 @@ export const validateForm = (formData, userType, isLogin) => {
     }
   }
 
-  // Password validation
+  // Password validation (required for ALL users)
   if (!formData.password) {
     errors.password = 'Password is required';
   } else if (!isLogin && !validatePassword(formData.password)) {
     errors.password = 'Password must be at least 6 characters';
   }
 
-  // Registration-specific validations
+  // Registration-specific validations (only when NOT logging in)
   if (!isLogin) {
     if (!validateRequired(formData.fullName)) {
       errors.fullName = 'Full name is required';

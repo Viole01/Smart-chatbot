@@ -17,9 +17,9 @@ const LoginPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-            <div className="text-white text-2xl font-bold">M+</div>
+            <div className="text-white text-2xl font-bold">SC</div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">MedConnect</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Smart Chatbot</h1>
           <p className="text-gray-600">Your healthcare management portal</p>
         </div>
 
