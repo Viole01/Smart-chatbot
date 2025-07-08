@@ -5,8 +5,8 @@ from app.api.v1.api import api_router
 from app.core.config import settings
 
 app = FastAPI(
-    title="MedConnect API",
-    description="Healthcare Management System API",
+    title=settings.PROJECT_NAME + " API",
+    description="Smart Chatbot API for Online Medical Consultation",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -22,19 +22,19 @@ app.add_middleware(
 )
 
 # Include API router
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():
     return {
-        "message": "MedConnect API",
+        "message": f"{settings.PROJECT_NAME} API",
         "version": "1.0.0",
         "docs": "/docs"
     }
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "service": settings.PROJECT_NAME}
 
 if __name__ == "__main__":
     import uvicorn
