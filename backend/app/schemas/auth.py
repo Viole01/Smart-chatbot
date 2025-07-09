@@ -7,7 +7,7 @@ from app.schemas.user import User
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
-    user_type: Optional[UserType] = None
+    user_type: UserType  # <- CHANGED: Made this REQUIRED instead of Optional
     
     class Config:
         # Allow the schema to be used in FastAPI

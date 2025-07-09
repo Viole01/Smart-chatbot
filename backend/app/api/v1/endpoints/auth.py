@@ -88,6 +88,13 @@ def login(
             detail="Doctor account pending verification"
         )
     
+    # CRITICAL: Add user type validation here
+    if user.user_type != user_credentials.user_type:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Access denied. This email is registered as a {str(user.user_type).replace('UserType.', '').title()}. Please select the correct user type to login."
+        )
+    
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         user.id, expires_delta=access_token_expires

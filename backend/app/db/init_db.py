@@ -24,12 +24,65 @@ def init_db(db: Session) -> None:
         admin_user = crud_user.create(db, obj_in=admin_user_in)
         print(f"Created admin user: {admin_user.email}")
 
+    # Create some sample doctors for testing
+    sample_doctors = [
+        {
+            "email": "dr.sarah@medconnect.com",
+            "password": "doctor123",
+            "full_name": "Dr. Sarah Johnson",
+            "phone": "+1234567890",
+            "specialization": "Cardiology",
+            "license_number": "MD12345",
+            "years_experience": 10,
+            "rating": 4.8
+        },
+        {
+            "email": "dr.michael@medconnect.com", 
+            "password": "doctor123",
+            "full_name": "Dr. Michael Chen",
+            "phone": "+1234567891",
+            "specialization": "General Practice",
+            "license_number": "MD12346",
+            "years_experience": 8,
+            "rating": 4.7
+        },
+        {
+            "email": "dr.emily@medconnect.com",
+            "password": "doctor123", 
+            "full_name": "Dr. Emily Rodriguez",
+            "phone": "+1234567892",
+            "specialization": "Dermatology",
+            "license_number": "MD12347",
+            "years_experience": 6,
+            "rating": 4.9
+        }
+    ]
+
+    for doctor_data in sample_doctors:
+        existing_doctor = crud_user.get_by_email(db, email=doctor_data["email"])
+        if not existing_doctor:
+            doctor_user_in = UserCreate(
+                email=doctor_data["email"],
+                password=doctor_data["password"],
+                full_name=doctor_data["full_name"],
+                phone=doctor_data["phone"],
+                user_type=UserType.DOCTOR,
+                specialization=doctor_data["specialization"],
+                license_number=doctor_data["license_number"],
+                years_experience=doctor_data["years_experience"],
+                rating=doctor_data["rating"],
+                is_active=True,
+                is_verified=True
+            )
+            doctor_user = crud_user.create(db, obj_in=doctor_user_in)
+            print(f"Created doctor: {doctor_user.email}")
+
 def create_tables():
     """
     Create all database tables
     """
     from app.db.session import engine
-    from app.models import user  # Import all models here
+    from app.models import user, appointment  # Import ALL models here
     
     # Import all models to ensure they are registered
     from app.db.session import Base

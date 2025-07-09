@@ -1,5 +1,6 @@
 # backend/app/models/user.py
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Enum
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Enum, Float
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
 
@@ -23,6 +24,8 @@ class User(Base):
     # Doctor-specific fields
     specialization = Column(String, nullable=True)
     license_number = Column(String, unique=True, nullable=True, index=True)
+    years_experience = Column(Integer, nullable=True)
+    rating = Column(Float, nullable=True, default=4.5)
     
     # Status fields
     is_active = Column(Boolean, default=True)
@@ -32,3 +35,7 @@ class User(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships for appointments
+    patient_appointments = relationship("Appointment", foreign_keys="Appointment.patient_id", back_populates="patient")
+    doctor_appointments = relationship("Appointment", foreign_keys="Appointment.doctor_id", back_populates="doctor")

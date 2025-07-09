@@ -1,7 +1,7 @@
 // frontend/src/components/patient/PatientDashboard.jsx
-// import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar, User, FileText, Phone, LogOut } from 'lucide-react';
+import { Calendar, User, FileText, Phone, LogOut, MessageCircle } from 'lucide-react';
+import AppointmentChatSystem from './AppointmentChatSystem';
 
 const PatientDashboard = () => {
   const { user, logout } = useAuth();
@@ -48,44 +48,68 @@ const PatientDashboard = () => {
           </p>
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <Calendar className="w-8 h-8 text-blue-500 mb-4" />
-            <h3 className="font-semibold text-gray-800 mb-2">Appointments</h3>
-            <p className="text-sm text-gray-600">Schedule and manage your appointments</p>
-          </div>
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          
+          {/* Left Column - Quick Actions & Recent Activity */}
+          <div className="xl:col-span-2 space-y-8">
+            
+            {/* Quick Actions Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <Calendar className="w-8 h-8 text-blue-500 mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">Appointments</h3>
+                <p className="text-sm text-gray-600">Schedule and manage your appointments</p>
+              </div>
 
-          <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <FileText className="w-8 h-8 text-green-500 mb-4" />
-            <h3 className="font-semibold text-gray-800 mb-2">Medical Records</h3>
-            <p className="text-sm text-gray-600">View your medical history and reports</p>
-          </div>
+              <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <FileText className="w-8 h-8 text-green-500 mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">Medical Records</h3>
+                <p className="text-sm text-gray-600">View your medical history and reports</p>
+              </div>
 
-          <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <User className="w-8 h-8 text-purple-500 mb-4" />
-            <h3 className="font-semibold text-gray-800 mb-2">Profile</h3>
-            <p className="text-sm text-gray-600">Update your personal information</p>
-          </div>
+              <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <User className="w-8 h-8 text-purple-500 mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">Profile</h3>
+                <p className="text-sm text-gray-600">Update your personal information</p>
+              </div>
 
-          <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
-            <Phone className="w-8 h-8 text-orange-500 mb-4" />
-            <h3 className="font-semibold text-gray-800 mb-2">Contact</h3>
-            <p className="text-sm text-gray-600">Get in touch with your care team</p>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-semibold text-gray-800">Recent Activity</h3>
-          </div>
-          <div className="p-6">
-            <div className="text-center text-gray-500 py-8">
-              <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>No recent activity to display</p>
-              <p className="text-sm">Your appointments and medical updates will appear here</p>
+              <div className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <Phone className="w-8 h-8 text-orange-500 mb-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">Contact</h3>
+                <p className="text-sm text-gray-600">Get in touch with your care team</p>
+              </div>
             </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold text-gray-800">Recent Activity</h3>
+              </div>
+              <div className="p-6">
+                <div className="text-center text-gray-500 py-8">
+                  <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No recent activity to display</p>
+                  <p className="text-sm">Your appointments and medical updates will appear here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - AI Chat Assistant */}
+          <div className="xl:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+              <div className="flex items-center gap-3 mb-4">
+                <MessageCircle className="w-6 h-6 text-blue-500" />
+                <h3 className="text-lg font-semibold text-gray-800">AI Appointment Assistant</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Describe your symptoms and I'll help you find the right doctor and book an appointment.
+              </p>
+            </div>
+            
+            {/* Chat System */}
+            <AppointmentChatSystem />
           </div>
         </div>
       </main>

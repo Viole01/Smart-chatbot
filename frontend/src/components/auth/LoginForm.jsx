@@ -11,11 +11,9 @@ const LoginForm = ({ onToggleMode }) => {
   const { login } = useAuth();
   const [userType, setUserType] = useState('patient');
   
-  // For LOGIN, we only need email and password - NO phone
   const [formData, setFormData] = useState({
     email: '',
     password: ''
-    // Note: Removed phone, fullName, etc. - not needed for login
   });
   
   const [errors, setErrors] = useState({});
@@ -28,16 +26,44 @@ const LoginForm = ({ onToggleMode }) => {
     if (Object.keys(validationErrors).length === 0) {
       setLoading(true);
       try {
-        const response = await authService.login({
+        const loginData = {
           email: formData.email,
           password: formData.password,
           user_type: userType
-        });
+        };
+
+        const response = await authService.login(loginData);
         
+        // CRITICAL SECURITY CHECK: Validate user type matches selection
+        const actualUserType = response.user?.user_type || response.user?.userType || response.user?.role;
+        
+        if (actualUserType && actualUserType !== userType) {
+          // User type mismatch - prevent login
+          const userTypeNames = {
+            patient: 'Patient',
+            doctor: 'Doctor', 
+            admin: 'Admin'
+          };
+
+          setErrors({ 
+            submit: `Access denied. This email is registered as a ${userTypeNames[actualUserType] || actualUserType}. Please select "${userTypeNames[actualUserType]}" to login, or use the correct email for ${userTypeNames[userType]} access.`
+          });
+          setLoading(false);
+          return;
+        }
+
+        // If we get here, user type matches - proceed with login
         login(response.user, response.access_token);
-        // Redirect will be handled by the router
+        
       } catch (error) {
-        setErrors({ submit: error.message || 'Login failed' });
+        // Handle different types of errors
+        if (error.message?.includes('Invalid credentials') || error.message?.includes('unauthorized')) {
+          setErrors({ submit: 'Invalid email or password. Please check your credentials.' });
+        } else if (error.message?.includes('user_type') || error.message?.includes('role')) {
+          setErrors({ submit: 'Access denied. Please select the correct user type for this account.' });
+        } else {
+          setErrors({ submit: error.message || 'Login failed. Please try again.' });
+        }
       } finally {
         setLoading(false);
       }
@@ -64,8 +90,17 @@ const LoginForm = ({ onToggleMode }) => {
       />
 
       {errors.submit && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-          {errors.submit}
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p>{errors.submit}</p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -76,7 +111,7 @@ const LoginForm = ({ onToggleMode }) => {
           currentUserType.color
         } hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50`}
       >
-        {loading ? 'Logging in...' : `Login as ${currentUserType.label}`}
+        {loading ? 'Verifying credentials...' : `Login as ${currentUserType.label}`}
       </button>
 
       <div className="text-center text-sm text-gray-600">
@@ -87,6 +122,11 @@ const LoginForm = ({ onToggleMode }) => {
         >
           Register here
         </button>
+      </div>
+
+      {/* Helpful hint */}
+      <div className="text-center text-xs text-gray-500 mt-4 p-3 bg-gray-50 rounded-lg">
+        💡 <strong>Tip:</strong> Make sure to select the correct user type that matches your account registration.
       </div>
     </div>
   );
