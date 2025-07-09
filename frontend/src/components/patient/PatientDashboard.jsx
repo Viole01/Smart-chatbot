@@ -1,7 +1,7 @@
 // frontend/src/components/patient/PatientDashboard.jsx
 import { useAuth } from '../../context/AuthContext';
 import { Calendar, User, FileText, Phone, LogOut, MessageCircle } from 'lucide-react';
-import AppointmentChatSystem from './AppointmentChatSystem';
+import MedicalChatbot from './MedicalChatbot';
 
 const PatientDashboard = () => {
   const { user, logout } = useAuth();
@@ -109,7 +109,7 @@ const PatientDashboard = () => {
             </div>
             
             {/* Chat System */}
-            <AppointmentChatSystem />
+            <MedicalChatbot />
           </div>
         </div>
       </main>

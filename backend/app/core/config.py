@@ -24,13 +24,13 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     
     # Email (optional)
-    SMTP_TLS: bool = True
-    SMTP_PORT: int = 587
-    SMTP_HOST: str = ""
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""
-    EMAILS_FROM_EMAIL: str = ""
-    EMAILS_FROM_NAME: str = "MedConnect"
+    # SMTP_TLS: bool = True
+    # SMTP_PORT: int = 587
+    # SMTP_HOST: str = ""
+    # SMTP_USER: str = ""
+    # SMTP_PASSWORD: str = ""
+    # EMAILS_FROM_EMAIL: str = ""
+    # EMAILS_FROM_NAME: str = "MedConnect"
     
     # File uploads
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB

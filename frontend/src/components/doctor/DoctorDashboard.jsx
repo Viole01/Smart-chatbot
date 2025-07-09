@@ -1,7 +1,7 @@
 // frontend/src/components/doctor/DoctorDashboard.jsx
-// import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Users, Calendar, FileText, Stethoscope, LogOut, Clock } from 'lucide-react';
+import AvailabilityManager from './AvailabilityManager'; // Add this import
 
 const DoctorDashboard = () => {
   const { user, logout } = useAuth();
@@ -92,6 +92,11 @@ const DoctorDashboard = () => {
               <Clock className="w-8 h-8 text-purple-500" />
             </div>
           </div>
+        </div>
+
+        {/* Availability Manager Section - NEW */}
+        <div className="mb-8">
+          <AvailabilityManager />
         </div>
 
         {/* Quick Actions Grid */}

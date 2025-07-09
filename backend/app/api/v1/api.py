@@ -1,15 +1,10 @@
-# backend/app/api/v1/api.py
+# backend/app/api/v1/api.py (FastAPI version)
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth
-from app.api.v1.endpoints import appointments
+from .endpoints import auth, appointments, availability
 
 api_router = APIRouter()
 
-# Include auth endpoints
-api_router.include_router(auth.router, prefix="/auth", tags=["authentication"])
+# Include routers
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(appointments.router, prefix="/appointments", tags=["appointments"])
-
-# Add other routers here as you build them
-# api_router.include_router(users.router, prefix="/users", tags=["users"])
-# api_router.include_router(patients.router, prefix="/patients", tags=["patients"])
-# api_router.include_router(doctors.router, prefix="/doctors", tags=["doctors"])
+api_router.include_router(availability.router, prefix="/availability", tags=["availability"])

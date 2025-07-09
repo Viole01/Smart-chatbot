@@ -1,80 +1,126 @@
 // frontend/src/services/appointments.js
-import api from './api';
+const API_BASE_URL = '/api/v1';
 
 export const appointmentService = {
-  // Analyze patient symptoms
-  analyzeSymptoms: async (symptoms) => {
-    try {
-      const response = await api.post('/appointments/analyze-symptoms', {
-        symptoms,
-        // patient_id will be automatically included from the authenticated user
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error analyzing symptoms:', error);
-      throw error;
+  // Collect patient demographics
+  collectDemographics: async (age, gender) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/collect-demographics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ age, gender })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to collect demographics');
     }
+    
+    return response.json();
+  },
+
+  // Analyze symptoms with demographics
+  analyzeSymptoms: async (symptoms, age, gender) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/analyze-symptoms-enhanced`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ symptoms, age, gender })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to analyze symptoms');
+    }
+    
+    return response.json();
   },
 
   // Get available doctors by specialty
-  getAvailableDoctors: async (specialty = 'General Practice', date = null) => {
-    try {
-      const params = new URLSearchParams();
-      if (specialty) params.append('specialty', specialty);
-      if (date) params.append('date', date);
-      
-      const response = await api.get(`/appointments/available-doctors?${params}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching available doctors:', error);
-      throw error;
+  getAvailableDoctors: async (specialty) => {
+    const response = await fetch(`${API_BASE_URL}/availability/doctors/by-specialty/${encodeURIComponent(specialty)}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to get available doctors');
     }
+    
+    return response.json();
   },
 
-  // Book an appointment
-  bookAppointment: async (appointmentData) => {
-    try {
-      const response = await api.post('/appointments/book-appointment', appointmentData);
-      return response.data;
-    } catch (error) {
-      console.error('Error booking appointment:', error);
-      throw error;
+  // Get doctor's public availability
+  getDoctorAvailability: async (doctorId) => {
+    const response = await fetch(`${API_BASE_URL}/availability/doctor/${doctorId}/availability`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to get doctor availability');
     }
+    
+    return response.json();
+  },
+
+  // Book appointment with demographics
+  bookAppointment: async (appointmentData) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/book-appointment-enhanced`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(appointmentData)
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to book appointment');
+    }
+    
+    return response.json();
   },
 
   // Get user's appointments
   getMyAppointments: async () => {
-    try {
-      const response = await api.get('/appointments/my-appointments');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/appointments/my-appointments`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to get appointments');
     }
+    
+    return response.json();
   },
 
-  // Cancel an appointment
+  // Cancel appointment
   cancelAppointment: async (appointmentId) => {
-    try {
-      const response = await api.put(`/appointments/${appointmentId}/cancel`);
-      return response.data;
-    } catch (error) {
-      console.error('Error cancelling appointment:', error);
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/appointments/appointments/${appointmentId}/cancel`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to cancel appointment');
     }
-  },
-
-  // Get doctor's schedule (for doctor users)
-  getDoctorSchedule: async (doctorId, date = null) => {
-    try {
-      const params = new URLSearchParams();
-      if (date) params.append('date', date);
-      
-      const response = await api.get(`/appointments/doctor-schedule/${doctorId}?${params}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching doctor schedule:', error);
-      throw error;
-    }
+    
+    return response.json();
   }
 };

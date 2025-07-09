@@ -42,7 +42,8 @@ def register(
         specialization=user_in.specialization if user_in.user_type == UserType.DOCTOR else None,
         license_number=user_in.license_number if user_in.user_type == UserType.DOCTOR else None,
         is_active=True,
-        is_verified=user_in.user_type != UserType.DOCTOR  # Doctors need manual verification
+        # FIX: Auto-verify doctors and admins, patients can be verified later if needed
+        is_verified=user_in.user_type in [UserType.DOCTOR, UserType.ADMIN]
     )
     
     # Create user
@@ -82,11 +83,20 @@ def login(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user"
         )
-    elif not user.is_verified and user.user_type == UserType.DOCTOR:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Doctor account pending verification"
-        )
+    
+    # FIX: Flexible verification - auto-verify doctors and admins on login
+    if not user.is_verified:
+        if user.user_type in [UserType.DOCTOR, UserType.ADMIN]:
+            # Auto-verify doctors and admins
+            user.is_verified = True
+            db.commit()
+            print(f"✅ Auto-verified {user.user_type.value}: {user.email}")
+        else:
+            # Patients still need verification (if you want email verification for patients)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Please verify your email address before logging in"
+            )
     
     # CRITICAL: Add user type validation here
     if user.user_type != user_credentials.user_type:
@@ -129,11 +139,18 @@ def login_oauth(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Inactive user"
         )
-    elif not user.is_verified and user.user_type == UserType.DOCTOR:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Doctor account pending verification"
-        )
+    
+    # FIX: Apply same flexible verification logic here too
+    if not user.is_verified:
+        if user.user_type in [UserType.DOCTOR, UserType.ADMIN]:
+            user.is_verified = True
+            db.commit()
+            print(f"✅ Auto-verified {user.user_type.value}: {user.email}")
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Please verify your email address before logging in"
+            )
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(

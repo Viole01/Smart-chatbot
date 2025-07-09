@@ -11,6 +11,7 @@ class AppointmentStatus(str, enum.Enum):
     CANCELLED = "cancelled"
     COMPLETED = "completed"
     NO_SHOW = "no_show"
+    AVAILABLE = "available"
 
 class AppointmentUrgency(str, enum.Enum):
     ROUTINE = "routine"
@@ -23,7 +24,7 @@ class Appointment(Base):
     id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Keys
-    patient_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    patient_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Nullable for availability slots
     doctor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     
     # Appointment Details
@@ -33,6 +34,10 @@ class Appointment(Base):
     diagnosis = Column(Text, nullable=True)
     prescription = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
+    
+    # Patient Demographics (collected during booking)
+    patient_age = Column(Integer, nullable=True)
+    patient_gender = Column(String(10), nullable=True)
     
     # Status and Classification
     status = Column(Enum(AppointmentStatus), default=AppointmentStatus.CONFIRMED)
