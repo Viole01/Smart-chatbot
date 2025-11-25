@@ -1,3 +1,5 @@
+# These files are auto-generated
+
 /frontend/node_modules/
 /backend/__pycache__/
 .venv/
